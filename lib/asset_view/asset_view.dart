@@ -27,7 +27,7 @@ class _RfwImagePageState extends State<RfwImagePage> {
     runtime.update(
       const LibraryName(['local']),
       LocalWidgetLibrary({
-        'AppTextField1': (BuildContext context, DataSource source) {
+        'AppImage': (BuildContext context, DataSource source) {
           // return Text("Hello");
           // final url = source.v(['url']) as String? ?? '';
           // source.v<String>(['name']) ?? '';

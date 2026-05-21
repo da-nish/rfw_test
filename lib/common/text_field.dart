@@ -64,9 +64,10 @@ class _AppTextFieldState extends State<AppTextField> {
                 },
               )
             : widget.suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        // border: OutlineInputBorder(
+        //   borderSide: BorderSide(width: 0),
+        //   borderRadius: BorderRadius.circular(12),
+        // ),
       ),
     );
   }

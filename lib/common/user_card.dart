@@ -14,12 +14,12 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       child: ListTile(
         title: Text(name),
         onTap: onTap,
         // onTap: onTap(name, 999),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16,),
       ),
     );
   }

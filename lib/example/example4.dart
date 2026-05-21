@@ -28,40 +28,130 @@ class _DynamicScreenState extends State<DynamicScreen> {
       createMaterialWidgets(),
     );
 
+
+    runtime.update(
+      const LibraryName(['local']),
+      LocalWidgetLibrary({
+        'AppImage': (BuildContext context, DataSource source) {
+
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+
+            child: Image.network(
+              // "url",
+              source.v<String>(['name']) ?? '',
+              height: 180,
+              width: 180,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.broken_image),
+                );
+              },
+            ),
+          );
+        },
+      }),
+    );
+
+    // String ui = '''
+    //   import core.widgets;
+    //   import material;
+
+    //   widget root = Scaffold(
+    //     appBar: AppBar(
+    //       title: Text(text: ["RFW, ", data.header.title, ""]),
+    //     ),
+
+    //     body: Center(
+    //       child: Column(
+    //         mainAxisAlignment: "center",
+    //         children: [
+    //           Text(
+    //             text: data.user.name,
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   );
+    // ''';
     String ui = '''
-      import core.widgets;
-      import material;
+import core.widgets;
+import material;
+import local;
 
-      widget root = Scaffold(
-        appBar: AppBar(
-          title: Text(text: ["RFW, ", data.header.title, ""]),
-        ),
+widget root = Scaffold(
+  appBar: AppBar(
+    title: Text(
+      text: ["User Profile - ", data.user.name],
+    ),
+  ),
 
-        body: Center(
+  body: Padding(
+    padding: EdgeInsets(all: 16),
+    child: Column(
+      crossAxisAlignment: "start",
+      children: [
+
+        Center(
           child: Column(
-            mainAxisAlignment: "center",
-
             children: [
 
-              Text(
-                text: data.user.name,
-              ),
+              AppImage(
+                name: data.user.image
+                ),
 
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: event "login_click" {
-                  userId: 500,
-                  action: "login"
-                },
-                child: Text(
-                  text: "Login"
+              Card(
+                child: ListTile(
+                  title: Text(text: 'Name'),
+                  subtitle: Text(text: data.user.name),
+                  onTap: event "item_click" {
+                    id: data.user.name,
+                    title: data.user.name
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(text: 'Age'),
+                  subtitle: Text(text: data.user.age),
+                  onTap: event "item_click" {
+                    id: data.user.name,
+                    title: data.user.name
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(text: 'Mobile'),
+                  subtitle: Text(text: data.user.phone),
+                  onTap: event "item_click" {
+                    id: data.user.name,
+                    title: data.user.name
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(text: 'Location'),
+                  subtitle: Text(text: data.user.location),
+                  onTap: event "item_click" {
+                    id: data.user.name,
+                    title: data.user.name
+                  },
                 ),
               ),
             ],
           ),
         ),
-      );
-    ''';
+      ],
+    ),
+  ),
+);
+''';
 
     runtime.update(
       const LibraryName(['main']),
@@ -69,7 +159,11 @@ class _DynamicScreenState extends State<DynamicScreen> {
     );
 
     data.update('user', {
-      'name': 'Darshan',
+      'name': 'Alex',
+      'age': '16',
+      'phone': '9090909090',
+      'location': "BLR",
+      'image': "https://fastly.picsum.photos/id/351/300/200.jpg?hmac=FKrLuzw81mZ_CqcRWthUXXe88wCF2d1rqAfUK-VVBZ4"
     });
     data.update('header', {
       'title': 'App v1',

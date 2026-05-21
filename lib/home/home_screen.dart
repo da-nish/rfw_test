@@ -4,7 +4,11 @@ import 'package:rfw/rfw.dart';
 import 'package:test_stac/asset_view/asset_view.dart';
 import 'package:test_stac/common/text_field.dart';
 import 'package:test_stac/common/user_card.dart';
-import 'package:test_stac/listview/listview_screen2.dart';
+import 'package:test_stac/data/home_content.dart';
+import 'package:test_stac/dynamic_screen/placeholder_1.dart';
+import 'package:test_stac/example/example4.dart';
+import 'package:test_stac/dynamic_screen/placeholder_2.dart';
+import 'package:test_stac/dynamic_screen/placeholder_3.dart';
 
 class FintechHomeScreen extends StatefulWidget {
   const FintechHomeScreen({super.key});
@@ -17,9 +21,14 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
   final Runtime runtime = Runtime();
   final DynamicContent data = DynamicContent();
 
+  bool get hasUI => (homeContent["ui"] ?? "").isNotEmpty;
+
   @override
   void initState() {
     super.initState();
+
+
+    if(!hasUI){return;}
 
     /// Register core widgets
     runtime.update(const LibraryName(['core', 'widgets']), createCoreWidgets());
@@ -44,57 +53,39 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
         'AppTextField': (BuildContext context, DataSource source) {
           return AppTextField(
             controller: emailController,
-            label: "Email",
-            hintText: "Enter your email",
+            label: source.v<String>(['label']) ?? '',
+            hintText: source.v<String>(['name']) ?? '',
             onChanged: (value) {
               debugPrint("RFW onChanged: $value");
               final handler = source.voidHandler(['onChanged']);
               // handler();
-            }
+            },
           );
         },
-        'AppTextField1': (BuildContext context, DataSource source) {
-          return Text("Hello");
+        'LastWeekView': (BuildContext context, DataSource source) {
+          return LastWeekView(
+            text: source.v<String>(['text']) ?? '', 
+            value: source.v<String>(['value']) ?? ''
+            );
         },
+        'AppSpace': (context, source) {
+          final h = source.v<double>(['height']) ?? 0;
+
+            return AppSpace(height: h);
+          },
       }),
     );
 
     /// Dynamic string UI
-    String ui = '''
-      import core.widgets;
-      import material;
-      import local;
-
-      widget root = Center(
-          child: Column(
-          children: [
-            UserCard(
-              name: data.user.name,
-              onTap: event "card_clicked" {
-                userId: 101,
-                message: "Hello from RFW"
-              },
-            ),
-            SizedBox(height: 100),
-            AppTextField(
-              label: "Email",
-              hintText: "Enter your email",
-
-              onChanged: event "email_changed" {
-                value: "typed"
-              },
-            ),
-            AppTextField1()
-          ]
-        ),
-      );
-    ''';
+    
+    String ui = homeContent["ui"];
 
     /// Parse UI string
     runtime.update(const LibraryName(['main']), parseLibraryFile(ui));
 
     /// Dynamic data
-    data.update('user', {'name': 'Alex 1'});
+    data.update('user', homeContent["params"]);
+
   }
 
   final TextEditingController emailController = TextEditingController();
@@ -140,83 +131,90 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
                   ),
                 ],
               ),
-
-
-              SizedBox(
-                // height: 180,
-                child: RemoteWidget(
-                  runtime: runtime,
-                  data: data,
-                  widget: const FullyQualifiedWidgetName(
-                    LibraryName(['main']),
-                    'root',
-                  ),
-
-                  /// Handle events here
-                  onEvent: (String name, DynamicMap arguments) {
-                    debugPrint('EVENT: $name');
-                    debugPrint('ARGS: $arguments');
-
-                    if (name == 'card_clicked') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Clicked User ${arguments['userId']}'),
-                        ),
-                      );
-                    }
-                  },
+              if (hasUI)
+              const SizedBox(height: 20),
+              if (hasUI)
+              RemoteWidget(
+                runtime: runtime,
+                data: data,
+                widget: const FullyQualifiedWidgetName(
+                  LibraryName(['main']),
+                  'root',
                 ),
+                /// Handle events here
+                onEvent: (String name, DynamicMap arguments) {
+                  debugPrint('EVENT: $name');
+                  debugPrint('ARGS: $arguments');
+              
+                  if (name == 'card_clicked') {
+                    Navigator.push(
+                    context,
+                    // MaterialPageRoute(builder: (context) => DynamicListPage()),
+                    MaterialPageRoute(builder: (context) => Placeholder1()),
+                  );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(
+                    //     content: Text('Clicked User ${arguments['userId']}'),
+                    //   ),
+                    // );
+                  }
+                  else  if (name == 'search_card_clicked') {
+                    Navigator.push(
+                    context,
+                    // MaterialPageRoute(builder: (context) => DynamicListPage()),
+                    MaterialPageRoute(builder: (context) => DynamicListPage2()),
+                  );}
+                },
               ),
 
-
-              const SizedBox(height: 28),
+              // const SizedBox(height: 28),
 
               // BALANCE CARD
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Total Balance",
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      "\$24,680.50",
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildSmallStat(
-                          title: "Income",
-                          value: "+\$8,240",
-                          icon: Icons.arrow_downward_rounded,
-                          color: Colors.greenAccent,
-                        ),
-                        _buildSmallStat(
-                          title: "Expense",
-                          value: "-\$1,420",
-                          icon: Icons.arrow_upward_rounded,
-                          color: Colors.redAccent,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(24),
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(28),
+              //     gradient: const LinearGradient(
+              //       colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+              //     ),
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       const Text(
+              //         "Total Balance",
+              //         style: TextStyle(color: Colors.white70, fontSize: 16),
+              //       ),
+              //       const SizedBox(height: 12),
+              //       const Text(
+              //         "\$24,680.50",
+              //         style: TextStyle(
+              //           fontSize: 36,
+              //           fontWeight: FontWeight.bold,
+              //           color: Colors.white,
+              //         ),
+              //       ),
+              //       const SizedBox(height: 24),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           _buildSmallStat(
+              //             title: "Income",
+              //             value: "+\$8,240",
+              //             icon: Icons.arrow_downward_rounded,
+              //             color: Colors.greenAccent,
+              //           ),
+              //           _buildSmallStat(
+              //             title: "Expense",
+              //             value: "-\$1,420",
+              //             icon: Icons.arrow_upward_rounded,
+              //             color: Colors.redAccent,
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
               const SizedBox(height: 28),
 
@@ -236,88 +234,91 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _actionButton(Icons.send_rounded, "Send", null),
-                  _actionButton(Icons.account_balance_wallet_rounded, "Wallet", null),
-                  _actionButton(Icons.qr_code_scanner_rounded, "Scan", (){
-                   Navigator.push(
-                    context,
-                    // MaterialPageRoute(builder: (context) => DynamicListPage()),
-                    MaterialPageRoute(builder: (context) => RfwImagePage()),
-                  ); 
-                  }  
+                  _actionButton(
+                    Icons.account_balance_wallet_rounded,
+                    "Wallet",
+                    null,
                   ),
-                  _actionButton(Icons.more_horiz_rounded, "More", (){
+                  _actionButton(Icons.qr_code_scanner_rounded, "Scan", () {
                     Navigator.push(
-                    context,
-                    // MaterialPageRoute(builder: (context) => DynamicListPage()),
-                    MaterialPageRoute(builder: (context) => FixedInfiniteList()),
-
-                    
-                  );
+                      context,
+                      MaterialPageRoute(builder: (context) => DynamicListPage2()),
+                      // MaterialPageRoute(builder: (context) => RfwImagePage()),
+                    );
+                  }),
+                  _actionButton(Icons.more_horiz_rounded, "More", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DynamicListPage()),
+                      // MaterialPageRoute(
+                      //   builder: (context) => FixedInfiniteList(),
+                      // ),
+                    );
                   }),
                 ],
               ),
 
-              const SizedBox(height: 32),
+              // const SizedBox(height: 32),
 
               // INVESTMENTS
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "Investment Portfolio",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    "See all",
-                    style: TextStyle(color: Colors.deepPurpleAccent),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: const [
+              //     Text(
+              //       "Investment Portfolio",
+              //       style: TextStyle(
+              //         fontSize: 20,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.grey,
+              //       ),
+              //     ),
+              //     Text(
+              //       "See all",
+              //       style: TextStyle(color: Colors.deepPurpleAccent),
+              //     ),
+              //   ],
+              // ),
 
-              const SizedBox(height: 18),
+              // const SizedBox(height: 18),
 
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  children: [
-                    _investmentTile(
-                      name: "Bitcoin",
-                      symbol: "BTC",
-                      value: "\$12,420",
-                      growth: "+4.2%",
-                      color: Colors.orange,
-                    ),
-                    const SizedBox(height: 18),
+              // Container(
+              //   padding: const EdgeInsets.all(20),
+              //   decoration: BoxDecoration(
+              //     color: const Color(0xFF1E293B),
+              //     borderRadius: BorderRadius.circular(24),
+              //   ),
+              //   child: Column(
+              //     children: [
+              //       _investmentTile(
+              //         name: "Bitcoin",
+              //         symbol: "BTC",
+              //         value: "\$12,420",
+              //         growth: "+4.2%",
+              //         color: Colors.orange,
+              //       ),
+              //       const SizedBox(height: 18),
 
-                    _investmentTile(
-                      name: "Ethereum",
-                      symbol: "ETH",
-                      value: "\$8,120",
-                      growth: "+2.8%",
-                      color: Colors.purpleAccent,
-                    ),
-                    const SizedBox(height: 18),
+              //       _investmentTile(
+              //         name: "Ethereum",
+              //         symbol: "ETH",
+              //         value: "\$8,120",
+              //         growth: "+2.8%",
+              //         color: Colors.purpleAccent,
+              //       ),
+              //       const SizedBox(height: 18),
 
-                    _investmentTile(
-                      name: "Apple",
-                      symbol: "AAPL",
-                      value: "\$4,380",
-                      growth: "-1.1%",
-                      color: Colors.blueAccent,
-                    ),
-                  ],
-                ),
-              ),
+              //       _investmentTile(
+              //         name: "Apple",
+              //         symbol: "AAPL",
+              //         value: "\$4,380",
+              //         growth: "-1.1%",
+              //         color: Colors.blueAccent,
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
-              const SizedBox(height: 32),
+              // const SizedBox(height: 32),
 
               // CARDS SECTION
               Row(
@@ -447,7 +448,11 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
     );
   }
 
-  static Widget _actionButton(IconData icon, String label, VoidCallback? onTap) {
+  static Widget _actionButton(
+    IconData icon,
+    String label,
+    VoidCallback? onTap,
+  ) {
     return InkWell(
       onTap: onTap,
       child: Column(
@@ -666,5 +671,60 @@ class _FintechHomeScreenState extends State<FintechHomeScreen> {
         ),
       ],
     );
+  }
+}
+
+class LastWeekView extends StatelessWidget {
+  const LastWeekView({
+    super.key,
+    required this.text,
+    required this.value,
+  });
+
+  final String text;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        color: const Color.fromARGB(255, 198, 210, 209),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: Color.fromARGB(179, 71, 70, 70),
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 75, 75, 75),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class AppSpace extends StatelessWidget {
+  final double height;
+
+  const AppSpace({super.key, required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(height: height);
   }
 }
