@@ -1,4 +1,4 @@
-package com.example.test_stac
+package com.example.flutter_rfw_test
 
 import io.flutter.embedding.android.FlutterActivity
 

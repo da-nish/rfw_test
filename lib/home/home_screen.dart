@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
-import 'package:test_stac/asset_view/asset_view.dart';
-import 'package:test_stac/common/text_field.dart';
-import 'package:test_stac/common/user_card.dart';
-import 'package:test_stac/data/home_content.dart';
-import 'package:test_stac/dynamic_screen/placeholder_1.dart';
-import 'package:test_stac/example/example4.dart';
-import 'package:test_stac/dynamic_screen/placeholder_2.dart';
-import 'package:test_stac/dynamic_screen/placeholder_3.dart';
+import 'package:flutter_rfw_test/asset_view/asset_view.dart';
+import 'package:flutter_rfw_test/common/text_field.dart';
+import 'package:flutter_rfw_test/common/user_card.dart';
+import 'package:flutter_rfw_test/data/home_content.dart';
+import 'package:flutter_rfw_test/dynamic_screen/placeholder_1.dart';
+import 'package:flutter_rfw_test/example/example4.dart';
+import 'package:flutter_rfw_test/dynamic_screen/placeholder_2.dart';
+import 'package:flutter_rfw_test/dynamic_screen/placeholder_3.dart';
 
 class FintechHomeScreen extends StatefulWidget {
   const FintechHomeScreen({super.key});

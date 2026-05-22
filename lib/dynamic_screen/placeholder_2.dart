@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
-import 'package:test_stac/data/list_content.dart';
+import 'package:flutter_rfw_test/data/list_content.dart';
 
 
 class DynamicListPage extends StatefulWidget {

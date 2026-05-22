@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
-import 'package:test_stac/data/profile_content.dart';
+import 'package:flutter_rfw_test/data/profile_content.dart';
 
 class Placeholder1 extends StatefulWidget {
   const Placeholder1({super.key});

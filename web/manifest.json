@@ -1,6 +1,6 @@
 {
-    "name": "test_stac",
-    "short_name": "test_stac",
+    "name": "flutter_rfw_test",
+    "short_name": "flutter_rfw_test",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
